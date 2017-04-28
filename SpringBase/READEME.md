@@ -1,0 +1,2 @@
+#SpringBase
+SpringMVC代码的基本配置，以后再写SpringMVC代码时可以在此项目基础上进行修改
