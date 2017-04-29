@@ -16,7 +16,7 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public class HibernateConfig {
 	private String driverClassName="com.mysql.jdbc.Driver";
-	private String jdbcURL="jdbc:mysql://www.chongfer.cn:3306/mw2017";
+	private String jdbcURL="jdbc:mysql://www.baidu.com:3306/mw2017";
 	private String username="root";
 	private String password="";
 	@Bean
@@ -28,7 +28,7 @@ public class HibernateConfig {
 			lsfb.setDataSource(dataSource());
 			lsfb.setPackagesToScan(new String[]{"com.wcf.SpringHibernate.domain","com.wcf.SpringHibernate.dao"});
 			Properties props=new Properties();
-			//设置方言，采用的是mysql
+			//脡猫脰脙路陆脩脭拢卢虏脡脫脙碌脛脢脟mysql
 			props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
 			lsfb.setHibernateProperties(props);
 			lsfb.afterPropertiesSet();
