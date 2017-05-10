@@ -1,0 +1,14 @@
+！！！！Goods表的pre_sale_number改成销量（只是含义改变，具体字段没变）
+一.商品模块
+service层要写成接口的功能：
+public interface IGoodsMapper{
+
+1.public Goods getGoodsByGoodsCode(String serial_code);         //根据商品编号查找商品
+2.public GoodsList getGoodsByGoodsName(String goods_name);      //根据商品名称查找商品（这里你们可以尝试下模糊查询）
+3.public GoodsList getGoodsBy(Array<String> array);             //根据传进来的参数先判断参数是哪些，最多三个（品牌id(brand_id)、品类id(category_id)、和一个排序方法（按                                                                  销量(pre_sale_number)或真实价格(real_price)排序）至少为一个；如果参数为品牌表示要返回该品牌下的所有商                                                                  品，如果为品类表示返回该品类下的所有商品，如果参数为一个以上，自行选择链接查询！！！！注意返回的商品                                                                  都是已上架商品）
+4.public CategoryList getCategoryList();                        //返回所有可以显示到前台的商品品类，注意按前台显示顺序从小到大排序
+5.public BrandList getBrandList();                              //返回所有可以显示到前台的商品品牌
+6.public Stand getGoodsPrice(Long goods_id)                     //返回一个符合条件且已上架的上架信息（主要是为了查询商品价格）
+
+}
+
