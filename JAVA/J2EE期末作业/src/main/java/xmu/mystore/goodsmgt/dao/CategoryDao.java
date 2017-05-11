@@ -1,0 +1,13 @@
+package xmu.mystore.goodsmgt.dao;
+
+import java.util.List;
+
+import xmu.mystore.goodsmgt.model.Category;
+
+public interface CategoryDao {
+	public List<Category> getCategoryList();
+	public boolean addCategory(Category category);
+	public boolean deleteCategoryById(long id);
+	public Category getCategoryById(long id);
+	public boolean updateCategory(Category category);
+}

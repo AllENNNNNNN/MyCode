@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/xmu/mystore/config/HibernateConfig.java=UTF-8
+encoding//src/main/java/xmu/mystore/config/WebAppInititializer.java=UTF-8
+encoding//src/main/java/xmu/mystore/config/WebConfig.java=UTF-8
+encoding//src/main/webapp/WEB-INF/layout/template.vm=UTF-8
