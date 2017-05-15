@@ -1,0 +1,6 @@
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\bin\Debug\WebServiceTest.exe.config
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\bin\Debug\WebServiceTest.exe
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\bin\Debug\WebServiceTest.pdb
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\obj\Debug\WebServiceTest.csprojResolveAssemblyReference.cache
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\obj\Debug\WebServiceTest.exe
+c:\users\lenovo\documents\visual studio 2012\Projects\WebServiceTest\WebServiceTest\obj\Debug\WebServiceTest.pdb
