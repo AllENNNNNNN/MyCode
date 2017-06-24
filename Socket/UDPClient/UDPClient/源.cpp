@@ -37,23 +37,24 @@ int main()
 	}
 
 	SOCKADDR_IN addrServ;
-	addrServ.sin_addr.S_un.S_addr=inet_addr("127.0.0.1");
+	addrServ.sin_addr.S_un.S_addr=inet_addr("14.215.177.37");
 	addrServ.sin_family=AF_INET;
 	addrServ.sin_port=htons(4999);
 	while (true)
 	{
 		SOCKET socketClient=socket(AF_INET,SOCK_DGRAM,0);
-		FILE *f=fh.selectfile();
+		//FILE *f=fh.selectfile();
 		sendto(socketClient,beginData,BUFSIZ,0,(SOCKADDR*)&addrServ,sizeof(SOCKADDR));
 		strcpy(Filename,fh.getFileName());
 		sendto(socketClient,Filename,BUFSIZ,0,(SOCKADDR*)&addrServ,sizeof(SOCKADDR));
 		int count=0;
 		int sum=0;
-		while ((count=fread(sendData,1,BUFSIZ,f))>0)
+		while (true)
 		{
 			Sleep(1);
 			printf("%d\n",sum+=count);
-			sendto(socketClient,sendData,BUFSIZ,0,(SOCKADDR*)&addrServ,sizeof(SOCKADDR));
+			sendto(socketClient, beginData, BUFSIZ, 0, (SOCKADDR*)&addrServ, sizeof(SOCKADDR));
+			//sendto(socketClient,sendData,BUFSIZ,0,(SOCKADDR*)&addrServ,sizeof(SOCKADDR));
 		}
 		sendto(socketClient,overData,BUFSIZ,0,(SOCKADDR*)&addrServ,sizeof(SOCKADDR));
 		closesocket(socketClient);
