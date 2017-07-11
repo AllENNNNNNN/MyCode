@@ -10,8 +10,8 @@ int main(int arg, char *argv[])
 
 	CommandResolver commandResolver(arg, argv);
 	commandResolver.ResovleCommand();
-	
-	
+
+
 	FileResolver fileResolver(commandResolver.getDNSFileName(), commandResolver.getIPFileName());
 	std::cout << "domain file:" + commandResolver.getDNSFileName() << std::endl;
 	std::cout << "address file:" + commandResolver.getIPFileName() << std::endl;
@@ -21,7 +21,7 @@ int main(int arg, char *argv[])
 
 	int count = 0;
 	//Ëæ»ú·¢ËÍ
-
+	/*
 	while (true)
 	{
 		int i = rand() % DNSInfos.size();
@@ -49,46 +49,45 @@ int main(int arg, char *argv[])
 			count = 0;
 		}
 	}
-
+	*/
 	//Ë³Ðò·¢ËÍ
-	/*
-	while (true)
+
+
+
+	for (size_t i = 0; i < DNSInfos.size(); i++)
 	{
-		
-		for (size_t i = 0; i < DNSInfos.size(); i++)
+		for (size_t j = 0; j < IPInfos.size(); j++)
 		{
-			for (size_t j = 0; j < IPInfos.size(); j++)
+
+			DNS::DNSinfo tempDNSinfo = DNSInfos[i];
+			IPInfo tempIPInfo = IPInfos[j];
+			std::cout << "Query " + tempDNSinfo.domainName + "(" + tempDNSinfo.Type + ")" + " from " + tempIPInfo.getSrc() + " to " + tempIPInfo.getDes() << std::endl;
+			DNSBuilder dnsBuilder(tempDNSinfo);
+			DNS::DNSPocket dnsPocket = dnsBuilder.getDNSPackage();
+
+			UDPBuilder udpBuilder(dnsPocket);
+			UDPPocket udpPocket = udpBuilder.getUDPPocket();
+
+			IPBuilder ipBuilder(tempIPInfo, udpPocket);
+			IPPocket ipPocket = ipBuilder.getIPPocket();
+
+			RawSocketSender rawSocketSender;
+			rawSocketSender.sendPocket(ipPocket.IPdata, ipPocket.length);
+
+			delete[] ipPocket.IPdata;
+			++count;
+			if (count >= commandResolver.getRate())
 			{
-
-				DNS::DNSinfo tempDNSinfo = DNSInfos[i];
-				IPInfo tempIPInfo = IPInfos[j];
-				std::cout << "Query " + tempDNSinfo.domainName + "(" + tempDNSinfo.Type + ")" + " from " + tempIPInfo.getSrc() + " to " + tempIPInfo.getDes() << std::endl;
-				DNSBuilder dnsBuilder(tempDNSinfo);
-				DNS::DNSPocket dnsPocket = dnsBuilder.getDNSPackage();
-
-				UDPBuilder udpBuilder(dnsPocket);
-				UDPPocket udpPocket = udpBuilder.getUDPPocket();
-
-				IPBuilder ipBuilder(tempIPInfo, udpPocket);
-				IPPocket ipPocket = ipBuilder.getIPPocket();
-
-				RawSocketSender rawSocketSender;
-				rawSocketSender.sendPocket(ipPocket.IPdata, ipPocket.length);
-
-				delete[] ipPocket.IPdata;
-				++count;
-				if (count>=commandResolver.getRate())
-				{
-					sleep(1);
-					count = 0;
-				}
+				sleep(1);
+				count = 0;
 			}
 		}
-		*/
+
+
 
 	}
 
-	
 
-	
+
+
 }
